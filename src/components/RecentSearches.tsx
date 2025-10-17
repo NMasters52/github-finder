@@ -4,8 +4,8 @@ import { fetchGitHubUser } from "../api/github";
 
 type RecentSearchesProps = {
   users: string[];
-  updateUsername: (arg: string) => void;
-  updateSubmittedUsername: (arg: string) => void;
+  updateUsername: (username: string) => void;
+  updateSubmittedUsername: (username: string) => void;
 };
 
 const RecentSearches = ({
