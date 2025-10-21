@@ -4,7 +4,7 @@ import { useDebounce } from "use-debounce";
 import { fetchGitHubUser, searchGitHubUser } from "../api/github";
 import UserCard from "./UserCard";
 import RecentSearches from "./RecentSearches";
-import type { GitHubUser } from "../types";
+import SearchSuggestions from "./SearchSuggestions";
 
 const UserSearch = () => {
   const [username, setUsername] = useState("");
@@ -64,30 +64,30 @@ const UserSearch = () => {
             }}
           />
           {showSuggestions && suggestions?.length > 0 && (
-            <ul className="suggestions">
-              {suggestions.slice(0, 5).map((user: GitHubUser) => (
-                <li
-                  key={user.login}
-                  onClick={() => {
-                    setUsername(user.login);
-                    setShowSuggestions(false);
+            <SearchSuggestions
+              show={showSuggestions}
+              suggestions={suggestions}
+              onSelect={(selectedUser) => {
+                setUsername(selectedUser);
+                setShowSuggestions(false);
 
-                    if (submittedUsername !== user.login) {
-                      setSubmittedUsername(user.login);
-                    } else {
-                      refetch();
-                    }
-                  }}
-                >
-                  <img
-                    src={user.avatar_url}
-                    alt={user.login}
-                    className="avatar-xs"
-                  />
-                  {user.login}
-                </li>
-              ))}
-            </ul>
+                if (submittedUsername !== selectedUser) {
+                  setSubmittedUsername(selectedUser);
+                } else {
+                  refetch();
+                }
+
+                setRecentSearches((prev) => {
+                  const searches = [
+                    selectedUser,
+                    ...prev.filter((u) => u !== selectedUser),
+                  ];
+                  return searches.slice(0, 5);
+                });
+
+                setUsername("");
+              }}
+            />
           )}
         </div>
         <button type="submit">Search</button>
