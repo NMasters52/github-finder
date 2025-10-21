@@ -4,7 +4,7 @@ import { useDebounce } from "use-debounce";
 import { fetchGitHubUser, searchGitHubUser } from "../api/github";
 import UserCard from "./UserCard";
 import RecentSearches from "./RecentSearches";
-import SearchSuggestions from "./SearchSuggestions";
+import type { GitHubUser } from "../types";
 
 const UserSearch = () => {
   const [username, setUsername] = useState("");
@@ -64,30 +64,30 @@ const UserSearch = () => {
             }}
           />
           {showSuggestions && suggestions?.length > 0 && (
-            <SearchSuggestions
-              show={showSuggestions}
-              suggestions={suggestions}
-              onSelect={(selectedUser) => {
-                setUsername(selectedUser);
-                setShowSuggestions(false);
+            <ul className="suggestions">
+              {suggestions.slice(0, 5).map((user: GitHubUser) => (
+                <li
+                  key={user.login}
+                  onClick={() => {
+                    setUsername(user.login);
+                    setShowSuggestions(false);
 
-                if (submittedUsername !== selectedUser) {
-                  setSubmittedUsername(selectedUser);
-                } else {
-                  refetch();
-                }
-
-                setRecentSearches((prev) => {
-                  const searches = [
-                    selectedUser,
-                    ...prev.filter((u) => u !== selectedUser),
-                  ];
-                  return searches.slice(0, 5);
-                });
-
-                setUsername("");
-              }}
-            />
+                    if (submittedUsername !== user.login) {
+                      setSubmittedUsername(user.login);
+                    } else {
+                      refetch();
+                    }
+                  }}
+                >
+                  <img
+                    src={user.avatar_url}
+                    alt={user.login}
+                    className="avatar-xs"
+                  />
+                  {user.login}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
         <button type="submit">Search</button>
