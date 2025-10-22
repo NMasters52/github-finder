@@ -77,6 +77,14 @@ const UserSearch = () => {
                     } else {
                       refetch();
                     }
+                    setUsername("");
+                    setRecentSearches((prev) => {
+                      const searches = [
+                        user.login,
+                        ...prev.filter((u) => u !== user.login),
+                      ];
+                      return searches.slice(0, 5);
+                    });
                   }}
                 >
                   <img
